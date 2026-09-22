@@ -1,0 +1,22 @@
+{
+  "name": "KisanFlow — किसान प्रवाह",
+  "short_name": "KisanFlow",
+  "description": "AI-powered Smart Queue & Agri-Procurement System for Indian Farmers",
+  "start_url": "/farmer/login",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0d3311",
+  "theme_color": "#0d3311",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["agriculture", "productivity"],
+  "lang": "hi",
+  "dir": "ltr"
+}

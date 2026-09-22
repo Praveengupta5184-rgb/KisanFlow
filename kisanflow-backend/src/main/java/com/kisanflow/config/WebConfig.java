@@ -1,0 +1,3 @@
+package com.kisanflow.config;
+import org.springframework.context.annotation.*; import org.springframework.web.client.RestClient; import org.springframework.web.reactive.function.client.WebClient; import org.springframework.web.servlet.config.annotation.*;
+@Configuration public class WebConfig implements WebMvcConfigurer { @Bean RestClient.Builder restClientBuilder(){return RestClient.builder();} @Bean WebClient.Builder webClientBuilder(){return WebClient.builder();} @Override public void addCorsMappings(CorsRegistry r){r.addMapping("/api/**").allowedOriginPatterns("*").allowedMethods("GET","POST","PUT","PATCH","DELETE","OPTIONS").allowedHeaders("*").exposedHeaders("Authorization");}}

@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: kisanflow-backend
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/kisanflow}
+    username: ${DB_USERNAME:kisanflow}
+    password: ${DB_PASSWORD:kisanflow}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+  profiles:
+    default: dev
+server:
+  port: ${SERVER_PORT:8080}
+app:
+  demo-mode: true
+  jwt:
+    secret: ${JWT_SECRET}
+    access-minutes: 20
+    refresh-days: 7
+  ai:
+    base-url: ${AI_SERVICE_BASE_URL:http://localhost:8000}
+  simulation:
+    base-url: ${SIMULATION_SERVICE_BASE_URL:http://localhost:8100}
+  queue:
+    silent-turn-minutes: ${SILENT_TURN_MINUTES:30}
+  weather:
+    alert-enabled: ${WEATHER_ALERT_ENABLED:true}
+    severe-dates: ${WEATHER_SEVERE_DATES:}
+    search-days: ${WEATHER_SEARCH_DAYS:30}
+    emergency-capacity: ${WEATHER_EMERGENCY_CAPACITY:10}
+  mandi:
+    api-url: ${MANDI_API_URL:https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070}
+    api-key: ${MANDI_API_KEY:}
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

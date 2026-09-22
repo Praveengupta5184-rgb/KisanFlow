@@ -1,0 +1,4 @@
+package com.kisanflow.service;
+import com.kisanflow.dto.KisanFlowDtos.AiRequest; import org.springframework.beans.factory.annotation.Value; import org.springframework.stereotype.Service; import org.springframework.web.client.RestClient; import java.util.Map;
+@Service public class AiServiceClient { private final RestClient.Builder builder; @Value("${app.ai.base-url}") private String baseUrl; public AiServiceClient(RestClient.Builder builder){this.builder=builder;} public Map<?,?> invoke(String operation,AiRequest request){return builder.baseUrl(baseUrl).build().post().uri("/api/v1/"+operation).body(request.getPayload()).retrieve().body(Map.class);} public Map<?,?> invokeChatbot(Map<String,Object> body){return builder.baseUrl(baseUrl).build().post().uri("/api/v1/voice-query").body(body).retrieve().body(Map.class);} }
+
