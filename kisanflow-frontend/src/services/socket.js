@@ -10,9 +10,16 @@
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
-const WS_URL =
+let WS_URL =
   (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_WS_URL) ||
   '/ws/queue';
+
+// SockJS requires HTTP/HTTPS URLs, not ws:// or wss://
+if (WS_URL.startsWith('wss://')) {
+  WS_URL = WS_URL.replace('wss://', 'https://');
+} else if (WS_URL.startsWith('ws://')) {
+  WS_URL = WS_URL.replace('ws://', 'http://');
+}
 
 class SocketService {
   constructor() {
