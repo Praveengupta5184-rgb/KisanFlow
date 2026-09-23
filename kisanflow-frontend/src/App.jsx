@@ -15,6 +15,9 @@ import FarmerLayout from './components/farmer/FarmerLayout';
 // ── Auth Pages (Unified Portal) ─────────────────────────────
 import KisanFlowLoginPage from './pages/auth/KisanFlowLoginPage';
 import KisanFlowRegisterPage from './pages/auth/KisanFlowRegisterPage';
+import FarmerLoginPage from './pages/farmer/FarmerLoginPage';
+import OfficerLoginPage from './pages/officer/OfficerLoginPage';
+import TraderLoginPage from './pages/trader/TraderLoginPage';
 
 // ── Farmer Pages ────────────────────────────────────────────
 import FarmerProfilePage from './pages/farmer/FarmerProfilePage';
@@ -61,7 +64,7 @@ const FarmerRoute = ({ element }) => (
  * Auth routes — pages that should render WITHOUT the global Navbar / widgets.
  * All new login/register pages live here.
  */
-const AUTH_PATHS = ['/login', '/register'];
+const AUTH_PATHS = ['/login', '/register', '/farmer/login', '/officer/login', '/trader/login'];
 
 /**
  * AppLayout — conditionally shows Navbar and floating widgets.
@@ -108,6 +111,9 @@ function App() {
                     {/* ── Auth Routes (no Navbar, no widgets) ─────────── */}
                     <Route path="/login" element={<KisanFlowLoginPage />} />
                     <Route path="/register" element={<KisanFlowRegisterPage />} />
+                    <Route path="/farmer/login" element={<FarmerLoginPage />} />
+                    <Route path="/officer/login" element={<OfficerLoginPage />} />
+                    <Route path="/trader/login" element={<TraderLoginPage />} />
 
                     {/* ── Farmer Portal Routes ─────────────────────────── */}
                     {/* Dashboard home — new responsive landing page */}
