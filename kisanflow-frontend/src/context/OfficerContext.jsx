@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { officerApi } from '../services/api';
 import { socketService, buildCentreQueueTopic, buildCentreOccupancyTopic, buildCentreEntryExitTopic } from '../services/socket';
+import { safeJsonParse } from '../utils/storage';
 
 const OfficerContext = createContext();
 
 export const OfficerProvider = ({ children }) => {
   const [officer, setOfficer] = useState(() => {
     const saved = localStorage.getItem('kisanflow_officer');
-    return saved ? JSON.parse(saved) : null;
+    return safeJsonParse(saved);
   });
 
   const [centres, setCentres] = useState([]);

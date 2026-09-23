@@ -12,7 +12,7 @@ import { farmerApi } from '../../services/api';
 /* ── Constants ─────────────────────────────── */
 const API_BASE_URL =
   (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) ||
-  'http://localhost:8080/api';
+  '/api';
 
 const CROP_OPTIONS = [
   { value: 'Wheat',     label: 'Wheat (गेहूं)' },

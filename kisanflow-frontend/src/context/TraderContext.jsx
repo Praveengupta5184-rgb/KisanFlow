@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { traderApi } from '../services/api';
 import { socketService } from '../services/socket';
+import { safeJsonParse } from '../utils/storage';
 
 const TraderContext = createContext();
 
 export const TraderProvider = ({ children }) => {
   const [trader, setTrader] = useState(() => {
     const saved = localStorage.getItem('kisanflow_trader');
-    return saved ? JSON.parse(saved) : null;
+    return safeJsonParse(saved);
   });
 
   const [activeLots, setActiveLots] = useState([]);

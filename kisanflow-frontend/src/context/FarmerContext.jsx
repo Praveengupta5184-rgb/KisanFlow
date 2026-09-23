@@ -13,6 +13,7 @@ import {
   buildFarmerAuctionsTopic,
   buildFarmerPaymentTopic,
 } from '../services/socket';
+import { safeJsonParse } from '../utils/storage';
 
 const FarmerContext = createContext();
 
@@ -42,7 +43,7 @@ function resolveGps() {
 export const FarmerProvider = ({ children }) => {
   const [farmer, setFarmer] = useState(() => {
     const saved = localStorage.getItem('kisanflow_farmer');
-    return saved ? JSON.parse(saved) : null;
+    return safeJsonParse(saved);
   });
 
   // ── Centres ──────────────────────────────────────────────
@@ -67,7 +68,7 @@ export const FarmerProvider = ({ children }) => {
   // ── Active Token ──────────────────────────────────────────
   const [activeToken, setActiveToken] = useState(() => {
     const saved = localStorage.getItem('kisanflow_token');
-    return saved ? JSON.parse(saved) : null;
+    return safeJsonParse(saved);
   });
   const [personalQueue, setPersonalQueue] = useState(null);
 

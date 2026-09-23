@@ -13,7 +13,7 @@ import { farmerApi, officerApi, traderApi } from '../../services/api';
 /* ── Constants ──────────────────────────────────────── */
 const API_BASE_URL =
   (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) ||
-  'http://localhost:8080/api';
+  '/api';
 
 const DEMO_BYPASS_CODE = '123456';
 

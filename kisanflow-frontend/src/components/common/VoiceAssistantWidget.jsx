@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Phone, PhoneCall, PhoneOff, Volume2, Sparkles, X, CheckCircle2, Radio, Play, RotateCcw } from 'lucide-react';
+import { safeJsonParse } from '../../utils/storage';
 
 const VoiceAssistantWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,7 +13,7 @@ const VoiceAssistantWidget = () => {
 
   const [position, setPosition] = useState(() => {
     const saved = localStorage.getItem('ivr_widget_pos');
-    return saved ? JSON.parse(saved) : { x: 0, y: 0 };
+    return safeJsonParse(saved, { x: 0, y: 0 });
   });
   const [isDragging, setIsDragging] = useState(false);
   const dragRef = useRef({ startX: 0, startY: 0, lastX: position.x, lastY: position.y, dragging: false });
@@ -159,7 +160,7 @@ const VoiceAssistantWidget = () => {
       let farmerId = '00000000-0000-0000-0000-000000000000';
       if (rawFarmerStr) {
         try {
-           const f = JSON.parse(rawFarmerStr);
+           const f = safeJsonParse(rawFarmerStr, null);
            if (f && f.id) farmerId = f.id;
         } catch(e){}
       }
