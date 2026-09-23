@@ -49,6 +49,15 @@ public class RealtimeEventPublisher {
         messaging.convertAndSend("/topic/farmer/" + farmerId + topicSuffix, event);
     }
 
+    public <T> void publishTraderEvent(UUID traderId, String topicSuffix, String eventName, T payload) {
+        StandardEvent<T> event = StandardEvent.<T>builder()
+                .event(eventName)
+                .payload(payload)
+                .timestamp(OffsetDateTime.now())
+                .build();
+        messaging.convertAndSend("/topic/trader/" + traderId + topicSuffix, event);
+    }
+
     public <T> void publishCustomTopic(String destination, String eventName, T payload) {
         StandardEvent<T> event = StandardEvent.<T>builder()
                 .event(eventName)

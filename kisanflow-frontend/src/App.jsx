@@ -43,6 +43,7 @@ import PaymentDelayWidget from './pages/officer/PaymentDelayWidget';
 import FraudRiskPanel from './pages/officer/FraudRiskPanel';
 import WeatherDemoPanel from './pages/officer/WeatherDemoPanel';
 import GateManagement from './pages/officer/GateManagement';
+import QrScannerPage from './pages/officer/QrScannerPage';
 import LotManagement from './pages/officer/LotManagement';
 import ProcurementManagement from './pages/officer/ProcurementManagement';
 
@@ -143,7 +144,7 @@ function App() {
                     <Route path="/officer/fraud-risks" element={<ProtectedRoute allowedRole="OFFICER"><FraudRiskPanel /></ProtectedRoute>} />
                     {/* Weather Demo — manual trigger only, never auto-starts */}
                     <Route path="/officer/weather-demo" element={<ProtectedRoute allowedRole="OFFICER"><WeatherDemoPanel /></ProtectedRoute>} />
-                    <Route path="/officer/qr-scanner" element={<ProtectedRoute allowedRole="OFFICER"><GateManagement /></ProtectedRoute>} />
+                    <Route path="/officer/qr-scanner" element={<ProtectedRoute allowedRole="OFFICER"><QrScannerPage /></ProtectedRoute>} />
                     <Route path="/officer/lot-management" element={<ProtectedRoute allowedRole="OFFICER"><LotManagement /></ProtectedRoute>} />
                     <Route path="/officer/procurement" element={<ProtectedRoute allowedRole="OFFICER"><ProcurementManagement /></ProtectedRoute>} />
 

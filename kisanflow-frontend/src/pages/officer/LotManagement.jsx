@@ -166,7 +166,22 @@ const LotManagement = () => {
                     
                     <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '20px', borderRadius: '12px', marginTop: '16px', fontSize: '1rem', lineHeight: '1.8' }}>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                        <div><span style={{ color: '#166534' }}>Lot Number:</span><br/> <b style={{ fontSize: '1.2rem', color: '#14532d' }}>{lotData.lotNumber}</b></div>
+                        <div>
+                          <span style={{ color: '#166534' }}>Lot Number:</span><br/> 
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <b style={{ fontSize: '1.2rem', color: '#14532d' }}>{lotData.lotNumber}</b>
+                            {lotData.auctionExpiresAt && new Date() < new Date(lotData.auctionExpiresAt) && (
+                              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#d97706', background: '#fef3c7', padding: '2px 8px', borderRadius: '12px' }}>
+                                Expires: {Math.floor((new Date(lotData.auctionExpiresAt) - new Date()) / (1000 * 60 * 60))}h {Math.floor(((new Date(lotData.auctionExpiresAt) - new Date()) % (1000 * 60 * 60)) / (1000 * 60))}m
+                              </span>
+                            )}
+                            {lotData.auctionExpiresAt && new Date() >= new Date(lotData.auctionExpiresAt) && (
+                              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#ef4444', background: '#fee2e2', padding: '2px 8px', borderRadius: '12px' }}>
+                                Expired
+                              </span>
+                            )}
+                          </div>
+                        </div>
                         <div><span style={{ color: '#166534' }}>Status:</span><br/> <b style={{ textTransform: 'uppercase' }}>{lotData.status}</b></div>
                         <div><span style={{ color: '#166534' }}>Actual Weight:</span><br/> <b>{lotData.actualWeight} Qtl</b></div>
                         <div><span style={{ color: '#166534' }}>Base Price:</span><br/> <b>₹{lotData.basePrice}/Qtl</b></div>

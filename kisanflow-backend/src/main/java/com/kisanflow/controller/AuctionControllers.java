@@ -54,6 +54,22 @@ public class AuctionControllers {
         return ResponseEntity.ok(auctionService.placeBid(lotId, req));
     }
 
+    // For Farmer: Accept a bid (works on LIVE open lots — primary flow)
+    @PostMapping("/bids/{bidId}/accept")
+    @PreAuthorize("hasRole('FARMER')")
+    public ResponseEntity<LotResponse> acceptBid(@PathVariable UUID bidId, org.springframework.security.core.Authentication auth) {
+        UUID actualFarmerId = users.byId((UUID) auth.getPrincipal()).getLinkedFarmer().getId();
+        return ResponseEntity.ok(auctionService.acceptBid(bidId, actualFarmerId));
+    }
+
+    // For Farmer/Officer/Trader: Get all bids for a lot
+    @GetMapping("/lots/{lotId}/bids")
+    @PreAuthorize("hasAnyRole('OFFICER','DISTRICT_OFFICER','TRADER','FARMER')")
+    public ResponseEntity<java.util.List<BidResponse>> getBidsForLot(@PathVariable UUID lotId) {
+        java.util.List<BidResponse> bids = auctionService.getBidsForLot(lotId);
+        return ResponseEntity.ok(bids);
+    }
+
     // For Officer: Close Auction
     @PostMapping("/lots/{lotId}/close")
     @PreAuthorize("hasAnyRole('OFFICER','DISTRICT_OFFICER')")

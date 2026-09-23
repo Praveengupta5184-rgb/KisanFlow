@@ -31,6 +31,7 @@ const ProcurementManagement = () => {
       setBookings(eligible);
       
       // If we have a selected booking, refresh its lot data silently
+      // If we have a selected booking, refresh its lot data silently
       if (selectedBooking && silent) {
         const lot = await farmerApi.getLotByBooking(selectedBooking.id);
         setLotData(lot);
@@ -42,9 +43,20 @@ const ProcurementManagement = () => {
     }
   }, [selectedCentreId, selectedBooking]);
 
+  const [pendingPayments, setPendingPayments] = useState([]);
+  const fetchPendingPayments = useCallback(async () => {
+    try {
+      const payments = await officerApi.getPendingPayments();
+      setPendingPayments(payments || []);
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
   useEffect(() => { 
     fetchBookings(bookings.length > 0); 
-  }, [fetchBookings, liveCentreQueues[selectedCentreId]?.updatedAt]);
+    fetchPendingPayments();
+  }, [fetchBookings, fetchPendingPayments, liveCentreQueues[selectedCentreId]?.updatedAt]);
 
   const selectFarmer = async (booking) => {
     setSelectedBooking(booking);
@@ -98,6 +110,31 @@ const ProcurementManagement = () => {
       showToast('❌ Payment release failed: ' + (err?.response?.data?.message || 'Error'));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleVerifyPayment = async (paymentId) => {
+    try {
+      await officerApi.officerVerifyPayment(paymentId, true, 'Verified');
+      setPendingPayments(prev => prev.filter(p => p.id !== paymentId));
+      showToast('✅ Payment verified successfully');
+      // Also update the farmer's booking stage to payment_released
+      // Assuming we need to refetch bookings
+      fetchBookings();
+    } catch (err) {
+      showToast('❌ Verification failed: ' + (err?.response?.data?.message || 'Error'));
+    }
+  };
+
+  const handleRejectPayment = async (paymentId) => {
+    const reason = window.prompt('Reason for rejection:');
+    if (!reason) return;
+    try {
+      await officerApi.officerVerifyPayment(paymentId, false, reason);
+      setPendingPayments(prev => prev.filter(p => p.id !== paymentId));
+      showToast('❌ Payment rejected');
+    } catch (err) {
+      showToast('❌ Rejection failed: ' + (err?.response?.data?.message || 'Error'));
     }
   };
 
@@ -246,6 +283,33 @@ const ProcurementManagement = () => {
                     </div>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Officer Verification Section */}
+            {pendingPayments.length > 0 && (
+              <div className="kisan-card" style={{ padding: '24px', marginTop: '24px' }}>
+                <h2 style={{ margin: '0 0 16px 0', color: '#0f172a' }}>Payments Awaiting Verification ({pendingPayments.length})</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {pendingPayments.map(p => (
+                    <div key={p.id} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontWeight: 700, color: '#0f172a' }}>Amount: ₹{p.amount}</div>
+                        <div style={{ fontSize: '0.875rem', color: '#64748b' }}>Offline Ref: <b>{p.offlineReference}</b></div>
+                        <div style={{ fontSize: '0.875rem', color: '#64748b' }}>Booking ID: {p.bookingId?.substring(0,8)}</div>
+                        <div style={{ fontSize: '0.875rem', color: '#64748b', marginTop: '4px' }}>Farmer Confirmed: {p.farmerConfirmation ? 'Yes ✅' : 'No'}</div>
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button onClick={() => handleVerifyPayment(p.id)} style={{ padding: '8px 16px', background: '#16a34a', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>
+                          Verify
+                        </button>
+                        <button onClick={() => handleRejectPayment(p.id)} style={{ padding: '8px 16px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>
+                          Reject
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>

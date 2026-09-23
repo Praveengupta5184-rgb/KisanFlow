@@ -10,6 +10,49 @@ const VoiceAssistantWidget = () => {
   const timerRef = useRef(null);
   const logContainerRef = useRef(null);
 
+  const [position, setPosition] = useState(() => {
+    const saved = localStorage.getItem('ivr_widget_pos');
+    return saved ? JSON.parse(saved) : { x: 0, y: 0 };
+  });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragRef = useRef({ startX: 0, startY: 0, lastX: position.x, lastY: position.y, dragging: false });
+
+  const handlePointerDown = (e) => {
+    dragRef.current.startX = e.clientX;
+    dragRef.current.startY = e.clientY;
+    dragRef.current.dragging = false;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e) => {
+    if (e.buttons !== 1 && e.pointerType === 'mouse') return;
+    if (dragRef.current.startX === 0) return;
+    const dx = e.clientX - dragRef.current.startX;
+    const dy = e.clientY - dragRef.current.startY;
+    if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+      dragRef.current.dragging = true;
+      setIsDragging(true);
+      // Constrain roughly within screen
+      let newX = dragRef.current.lastX + dx;
+      let newY = dragRef.current.lastY + dy;
+      setPosition({ x: newX, y: newY });
+    }
+  };
+
+  const handlePointerUp = (e) => {
+    if (dragRef.current.dragging) {
+      dragRef.current.lastX = position.x;
+      dragRef.current.lastY = position.y;
+      localStorage.setItem('ivr_widget_pos', JSON.stringify({ x: position.x, y: position.y }));
+    } else {
+      setIsOpen(true);
+    }
+    dragRef.current.startX = 0;
+    dragRef.current.dragging = false;
+    setTimeout(() => setIsDragging(false), 50);
+    e.currentTarget.releasePointerCapture(e.pointerId);
+  };
+
   // Auto-scroll logs to bottom
   useEffect(() => {
     if (logContainerRef.current) {
@@ -160,11 +203,14 @@ const VoiceAssistantWidget = () => {
       {/* Floating Action Button */}
       <button
         id="open-ivr-simulator-btn"
-        onClick={() => setIsOpen(true)}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
         style={{
           position: 'fixed',
           bottom: '24px',
           right: '24px',
+          transform: `translate(${position.x}px, ${position.y}px)`,
           zIndex: 10000,
           background: 'linear-gradient(135deg, #0d3311, #1b5e20)',
           color: '#ffffff',
@@ -175,9 +221,10 @@ const VoiceAssistantWidget = () => {
           alignItems: 'center',
           gap: '12px',
           border: 'none',
-          cursor: 'pointer',
+          cursor: isDragging ? 'grabbing' : 'grab',
+          touchAction: 'none',
           fontFamily: 'inherit',
-          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+          transition: isDragging ? 'none' : 'box-shadow 0.2s ease',
         }}
         title="Interactive IVR Voice Accessibility Simulator"
       >

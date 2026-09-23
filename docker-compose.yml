@@ -1,25 +1,5 @@
 name: kisanflow
 services:
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-kisanflow}
-      POSTGRES_USER: ${POSTGRES_USER:-kisanflow}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-      - ./kisanflow-database.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-      - ./scripts/init-officer-accounts.sql:/docker-entrypoint-initdb.d/02-officer-accounts.sql:ro
-      - ./scripts/add-crop-prices.sql:/docker-entrypoint-initdb.d/03-crop-prices.sql:ro
-      - ./scripts/04-qr-entry-exit.sql:/docker-entrypoint-initdb.d/04-qr-entry-exit.sql:ro
-      - ./scripts/demo-trader.sql:/docker-entrypoint-initdb.d/05-demo-trader.sql:ro
-    ports: ["${POSTGRES_PORT:-5432}:5432"]
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
-      interval: 5s
-      timeout: 3s
-      retries: 20
-    networks: [kisanflow]
   ai-service:
     build: ./kisanflow-ai-service
     environment:
@@ -34,9 +14,6 @@ services:
   backend:
     build: ./kisanflow-backend
     environment:
-      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-kisanflow}?stringtype=unspecified
-      DB_USERNAME: ${POSTGRES_USER:-kisanflow}
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
       AI_SERVICE_BASE_URL: http://ai-service:8000
       SIMULATION_SERVICE_BASE_URL: http://simulation-service:8100
       JWT_SECRET: ${JWT_SECRET:-ZGV2LW9ubHktY2hhbmdlLXRoaXMtdG8tYS0zMi1ieXRlLW1pbmltdW0tc2VjcmV0IQ==}
@@ -46,7 +23,6 @@ services:
       WEATHER_SEARCH_DAYS: ${WEATHER_SEARCH_DAYS:-30}
     ports: ["${BACKEND_PORT:-8080}:8080"]
     depends_on:
-      postgres: { condition: service_healthy }
       ai-service: { condition: service_started }
       simulation-service: { condition: service_started }
     networks: [kisanflow]
@@ -59,7 +35,6 @@ services:
     depends_on: [backend]
     networks: [kisanflow]
   officer-dashboard:
-    # The current repository has one React workspace; mount a dedicated dashboard build here when available.
     build:
       context: ./kisanflow-frontend
       args:
@@ -75,17 +50,7 @@ services:
     ports: ["${TRADER_APP_PORT:-3002}:80"]
     depends_on: [backend]
     networks: [kisanflow]
-  pgadmin:
-    image: dpage/pgadmin4:8.14
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@kisanflow.local}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-change-me}
-    ports: ["${PGADMIN_PORT:-5050}:80"]
-    depends_on: [postgres]
-    networks: [kisanflow]
 networks:
   kisanflow:
     name: kisanflow-network
     driver: bridge
-volumes:
-  postgres-data:

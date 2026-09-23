@@ -361,7 +361,7 @@ const FarmerTokenManager = () => {
       {/* ── Update Stage Modal ── */}
       {modal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: '16px' }}>
-          <div style={{ background: '#fff', borderRadius: '16px', width: '100%', maxWidth: '480px', boxShadow: '0 25px 50px rgba(0,0,0,0.25)', overflow: 'hidden' }}>
+          <div style={{ background: '#fff', borderRadius: '16px', width: '100%', maxWidth: '480px', boxShadow: '0 25px 50px rgba(0,0,0,0.25)', overflow: 'hidden', maxHeight: '85vh', display: 'flex', flexDirection: 'column' }}>
             {/* Modal header */}
             <div style={{ background: 'linear-gradient(135deg, #0d3311, #1e293b)', color: '#fff', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
@@ -373,7 +373,7 @@ const FarmerTokenManager = () => {
               </button>
             </div>
 
-            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', overflowY: 'auto' }}>
               <form onSubmit={handleUpdate} style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                 <h4 style={{ margin: 0, color: '#0f172a' }}>1. Update Stage & Counter</h4>
                 {/* Stage selector */}

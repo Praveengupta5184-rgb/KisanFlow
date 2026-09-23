@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 @SpringBootApplication
-@org.springframework.data.jpa.repository.config.EnableJpaRepositories(considerNestedRepositories = true)
 @EnableMethodSecurity
 @EnableScheduling
 @EnableAsync

@@ -106,6 +106,22 @@ export const farmerApi = {
     const res = await apiClient.get(`/v1/bookings/${bookingId}/qr`);
     return res.data;
   },
+  getFarmerPayments: async (farmerId) => {
+    const res = await apiClient.get(`/v1/payments/farmer/${farmerId}`);
+    return res.data;
+  },
+  farmerConfirmPayment: async (paymentId, confirmed, remarks) => {
+    const res = await apiClient.post(`/v1/payments/${paymentId}/farmer-confirm`, { confirmed, remarks });
+    return res.data;
+  },
+  acceptBid: async (bidId) => {
+    const res = await apiClient.post(`/v1/auctions/bids/${bidId}/accept`);
+    return res.data;
+  },
+  getLotBids: async (lotId) => {
+    const res = await apiClient.get(`/v1/auctions/lots/${lotId}/bids`);
+    return res.data;
+  },
 };
 
 export const officerApi = {
@@ -218,6 +234,14 @@ export const officerApi = {
     const res = await apiClient.post(`/v1/auctions/lots/${lotId}/close`);
     return res.data;
   },
+  getPendingPayments: async () => {
+    const res = await apiClient.get('/v1/payments/pending-verification');
+    return res.data;
+  },
+  officerVerifyPayment: async (paymentId, confirmed, remarks) => {
+    const res = await apiClient.post(`/v1/payments/${paymentId}/officer-verify`, { confirmed, remarks });
+    return res.data;
+  },
 };
 
 export const traderApi = {
@@ -237,6 +261,26 @@ export const traderApi = {
   },
   placeBid: async (lotId, bidRequest) => {
     const res = await apiClient.post(`/v1/auctions/lots/${lotId}/bids`, bidRequest);
+    return res.data;
+  },
+  getTraderPayments: async (traderId) => {
+    const res = await apiClient.get(`/v1/payments/trader/${traderId}`);
+    return res.data;
+  },
+  getTraderPaymentRequirement: async (lotId) => {
+    const res = await apiClient.get(`/v1/payments/trader-requirement/${lotId}`);
+    return res.data;
+  },
+  initiateOnlinePayment: async (payload) => {
+    const res = await apiClient.post('/v1/payments/initiate-online', payload);
+    return res.data;
+  },
+  completeOnlinePayment: async (paymentId) => {
+    const res = await apiClient.post(`/v1/payments/${paymentId}/online-complete`);
+    return res.data;
+  },
+  submitOfflinePayment: async (payload) => {
+    const res = await apiClient.post('/v1/payments/offline', payload);
     return res.data;
   },
 };

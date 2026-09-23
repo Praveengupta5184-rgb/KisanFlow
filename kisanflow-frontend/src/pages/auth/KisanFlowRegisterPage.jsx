@@ -169,19 +169,23 @@ const KisanFlowRegisterPage = () => {
     setError(''); setOtpLoading(true);
     try {
       const response = await axios.post(`${API_BASE_URL}/v1/auth/otp/verify`, {
-        mobileNumber, otp: otpCode,
+        mobileNumber, otp: otpCode, purpose: 'register'
       });
       if (response.status === 200) {
         setOtpVerified(true);
         setSuccess('Mobile number verified successfully!');
       }
     } catch (err) {
+      if (err.response?.status === 409) {
+        setError(err.response?.data?.message || 'An account for this mobile number already exists. Please login.');
+        return;
+      }
       const bypass = otpCode === '123456';
       if (bypass) {
         setOtpVerified(true);
         setSuccess('Mobile number verified (demo bypass).');
       } else {
-        setError('Invalid or expired OTP. Please try again.');
+        setError(err.response?.data?.message || 'Invalid or expired OTP. Please try again.');
       }
     } finally {
       setOtpLoading(false);

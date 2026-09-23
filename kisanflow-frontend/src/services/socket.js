@@ -91,7 +91,11 @@ class SocketService {
     const sub = this.client.subscribe(topic, (message) => {
       try {
         const data = JSON.parse(message.body);
-        callback(data);
+        if (data && data.payload !== undefined) {
+          callback(data.payload, data.event);
+        } else {
+          callback(data);
+        }
       } catch { /* ignore malformed */ }
     });
     this.subscriptions.set(topic, sub);
@@ -171,4 +175,19 @@ export function buildCentreEntryExitTopic(centreId) {
 
 export function buildFarmerMandiStatusTopic(farmerId) {
   return `/topic/farmer/${farmerId}/mandi-status`;
+}
+
+/** Fired when an officer creates a lot for the farmer's booking */
+export function buildFarmerLotTopic(farmerId) {
+  return `/topic/farmer/${farmerId}/lot`;
+}
+
+/** Fired on BID_UPDATED and AUCTION_CLOSED for this farmer's lot */
+export function buildFarmerAuctionsTopic(farmerId) {
+  return `/topic/farmer/${farmerId}/auctions`;
+}
+
+/** Fired when an officer records a payment against the farmer's booking */
+export function buildFarmerPaymentTopic(farmerId) {
+  return `/topic/farmer/${farmerId}/payment`;
 }

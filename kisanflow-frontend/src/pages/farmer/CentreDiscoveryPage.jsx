@@ -55,7 +55,7 @@ const CentreDiscoveryPage = () => {
       <div className="farmer-body">
         <div className="kisan-card" style={{ padding: '16px', marginBottom: '16px', background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
-            <div><b>मंडी में अभी मौजूद किसान</b><div style={{ fontSize: '0.78rem', color: '#64748b' }}>Live mandi count</div></div>
+            <div><b>मंडी में अभी मौजूद किसान</b><div style={{ fontSize: '0.78rem', color: '#64748b' }}>Live mandi count (WebSocket)</div></div>
             <strong style={{ fontSize: '1.35rem', color: '#15803d' }}>{centreQueue?.activeFarmerCount ?? centreQueue?.pendingCount ?? 0}</strong>
           </div>
           <div style={{ marginTop: '12px', fontSize: '0.82rem', color: '#334155' }}>
@@ -310,7 +310,7 @@ const CentreDiscoveryPage = () => {
               >
                 <div>
                   <span style={{ color: '#64748b' }}>वर्तमान कतार: </span>
-                  <b>{centre.liveQueueCount} किसान</b>
+                  <b>{centre.liveInsideCount !== undefined ? centre.liveInsideCount : (centre.liveQueueCount ?? '—')} किसान</b>
                 </div>
                 <div>
                   <span style={{ color: '#64748b' }}>सक्रिय कांटे: </span>

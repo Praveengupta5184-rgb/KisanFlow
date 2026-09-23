@@ -1,7 +1,15 @@
 package com.kisanflow.notification;
 
-import com.kisanflow.entity.KisanFlowEntities.*; import com.kisanflow.repository.KisanFlowRepositories.*; import com.kisanflow.service.KisanFlowServices.BookingStateChanged;
-import lombok.*; import lombok.extern.slf4j.Slf4j; import org.springframework.context.event.EventListener; import org.springframework.stereotype.*; import org.springframework.web.bind.annotation.*; import java.time.*; import java.util.*;
+import com.kisanflow.demo.InMemoryDemoStore;
+import com.kisanflow.entity.KisanFlowEntities.*;
+import com.kisanflow.service.KisanFlowServices.BookingStateChanged;
+import lombok.*; 
+import lombok.extern.slf4j.Slf4j; 
+import org.springframework.context.event.EventListener; 
+import org.springframework.stereotype.*; 
+import org.springframework.web.bind.annotation.*; 
+import java.time.*; 
+import java.util.*;
 import org.springframework.beans.factory.annotation.Value;
 
 public final class NotificationModule {
@@ -18,7 +26,6 @@ public final class NotificationModule {
         private String eventType;
     }
     
-    // Application Events
     public record GateEvent(UUID farmerId, UUID centreId, String eventType, String message) {}
     public record LotEvent(UUID farmerId, UUID centreId, String message) {}
     public record ProcurementEvent(UUID farmerId, UUID centreId, String message) {}
@@ -68,8 +75,7 @@ public final class NotificationModule {
     @Service @RequiredArgsConstructor @Slf4j 
     public static class NotificationService {
         private final List<NotificationSender> senders;
-        private final NotificationRepository records;
-        private final FarmerRepository farmers;
+        private final InMemoryDemoStore store;
         
         public void send(NotificationCommand c) {
             try {
@@ -79,18 +85,21 @@ public final class NotificationModule {
                     .orElseThrow(() -> new IllegalStateException("No provider for channel " + c.getChannel()))
                     .send(c);
                     
-                Farmer f = farmers.findById(c.getFarmerId()).orElseThrow();
+                Farmer f = store.getFarmerById(c.getFarmerId());
+                if (f == null) throw new NoSuchElementException("Farmer not found");
                 String dbChannel = c.getChannel() == Channel.IN_APP ? "app" : c.getChannel().name().toLowerCase();
                 String statusString = result.name().toLowerCase();
                 if (statusString.equals("simulated")) {
                     statusString = "sent";
                 }
-                records.save(Notification.builder()
+                store.saveNotification(Notification.builder()
+                    .id(UUID.randomUUID())
                     .farmer(f)
                     .channel(dbChannel)
                     .message(c.getMessage())
                     .sentAt(OffsetDateTime.now())
                     .status(statusString)
+                    .createdAt(OffsetDateTime.now())
                     .build());
             } catch (Exception e) {
                 log.error("Notification delivery failed for farmer {} event {}", c.getFarmerId(), c.getEventType(), e);
@@ -122,14 +131,14 @@ public final class NotificationModule {
     
     @RestController @RequestMapping("/api/v1/telephony") @CrossOrigin(origins="*") @RequiredArgsConstructor 
     public static class MissedCallController {
-        private final FarmerRepository farmers;
-        private final BookingRepository bookings;
+        private final InMemoryDemoStore store;
         private final NotificationService notifications;
         
         @PostMapping("/missed-call") 
         public Map<String,String> missed(@RequestBody Map<String,String> body) {
-            Farmer farmer = farmers.findByMobileNumber(body.get("mobileNumber")).orElseThrow(() -> new NoSuchElementException("Farmer not found"));
-            var b = bookings.findByFarmerIdAndStatusIn(farmer.getId(), List.of("token_generated", "arrived", "weighing", "quality_check", "procurement", "payment_processing")).stream().findFirst();
+            Farmer farmer = store.getAllFarmers().stream().filter(f -> body.get("mobileNumber").equals(f.getMobileNumber())).findFirst().orElseThrow(() -> new NoSuchElementException("Farmer not found"));
+            List<String> activeStatuses = List.of("token_generated", "arrived", "weighing", "quality_check", "procurement", "payment_processing");
+            var b = store.getAllBookings().stream().filter(x -> x.getFarmer().getId().equals(farmer.getId()) && activeStatuses.contains(x.getStatus())).findFirst();
             String message = b.map(x -> "Token A" + (100 + x.getTokenNumber()) + ", status: " + x.getStatus().replace("_", " ")).orElse("No active token.");
             notifications.send(NotificationCommand.builder().farmerId(farmer.getId()).channel(Channel.SMS).eventType("missedCall").message(message).build());
             return Map.of("status", "accepted", "message", message);

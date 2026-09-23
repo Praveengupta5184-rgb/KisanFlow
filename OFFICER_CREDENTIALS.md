@@ -70,64 +70,6 @@ curl -X GET http://localhost:8080/api/v1/farmers \
 
 ---
 
-## 🗄️ Database Setup
-
-### **Step 1: Apply SQL Script**
-
-After starting the Docker containers, run the initialization script:
-
-```powershell
-# From kisanflow-project directory
-docker exec kisanflow-postgres psql -U kisanflow -d kisanflow -f /scripts/init-officer-accounts.sql
-```
-
-**OR manually in pgAdmin:**
-1. Open pgAdmin: `http://localhost:5050`
-2. Login with:
-   - Email: `admin@kisanflow.local`
-   - Password: `change-me`
-3. Navigate to Database: `kisanflow`
-4. Open **Query Tool**
-5. Paste the SQL from `scripts/init-officer-accounts.sql`
-6. Click **Execute** (F5)
-
-### **Step 2: Verify Accounts Created**
-
-```bash
-docker exec kisanflow-postgres psql -U kisanflow -d kisanflow -c \
-  'SELECT username, role, "linkedCentreId" FROM "usersAuth" WHERE role IN ('"'"'OFFICER'"'"', '"'"'DISTRICT_OFFICER'"'"');'
-```
-
-Expected output:
-```
-      username      |       role        |           linkedCentreId           
--------------------+-------------------+------------------------------------
- officer_kapurthala | OFFICER           | f47ac10b-58cc-4372-a567-0e02b2c3d479
- officer_patiala    | OFFICER           | f47ac10b-58cc-4372-a567-0e02b2c3d480
- district_manager   | DISTRICT_OFFICER  | 
-```
-
----
-
-## 🔓 Change Password (Optional)
-
-Officers can update their password via the backend. To manually update in database:
-
-```sql
--- Update password hash for officer_kapurthala
--- New password: NewPassword@123
-UPDATE "usersAuth" 
-SET "passwordHash" = '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKeUxWdeS86E36P4/1Rm'
-WHERE username = 'officer_kapurthala';
-```
-
-To generate a new BCrypt hash, use an online tool or Spring Boot CLI:
-```bash
-spring encodepassword YourNewPassword@123
-```
-
----
-
 ## ⚙️ Officer Permissions
 
 | Action | OFFICER | DISTRICT_OFFICER |
@@ -172,8 +114,4 @@ spring encodepassword YourNewPassword@123
 ### JWT token expired
 - ✅ Token expires in 20 minutes
 - ✅ Use `refreshToken` endpoint to get a new access token
-
-### Database connection failed
-- ✅ Ensure PostgreSQL container is running: `docker ps`
-- ✅ Check database port in `.env` file (default: 5432)
 

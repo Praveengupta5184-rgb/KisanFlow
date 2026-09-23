@@ -1,9 +1,8 @@
 package com.kisanflow.controller;
 
+import com.kisanflow.demo.InMemoryDemoStore;
 import com.kisanflow.entity.KisanFlowEntities.Booking;
 import com.kisanflow.entity.KisanFlowEntities.Farmer;
-import com.kisanflow.repository.KisanFlowRepositories.BookingRepository;
-import com.kisanflow.repository.KisanFlowRepositories.FarmerRepository;
 import com.kisanflow.service.IvrSessionService;
 import com.kisanflow.service.IvrSessionService.IvrSession;
 import com.kisanflow.service.MandiDataService;
@@ -25,8 +24,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class IvrVoiceController {
 
-    private final BookingRepository bookings;
-    private final FarmerRepository farmers;
+    private final InMemoryDemoStore store;
     private final IvrSessionService sessionService;
     private final MandiDataService mandiDataService;
     private final QueueService queueService;
@@ -38,7 +36,7 @@ public class IvrVoiceController {
 
         IvrSession session = sessionService.getOrCreateSession(callerId);
         
-        Optional<Farmer> farmerOpt = farmers.findByMobileNumber(callerId);
+        Optional<Farmer> farmerOpt = store.getAllFarmers().stream().filter(f -> callerId.equals(f.getMobileNumber())).findFirst();
         String responseText = "";
 
         if (farmerOpt.isEmpty()) {
@@ -53,10 +51,8 @@ public class IvrVoiceController {
             case "MAIN_MENU":
                 if ("1".equals(digits)) {
                     // Token Status
-                    Optional<Booking> activeBookingOpt = bookings.findByFarmerIdAndStatusIn(
-                            farmer.getId(),
-                            List.of("booked", "token_generated", "arrived", "weighing", "quality_check", "procurement", "payment_processing")
-                    ).stream().findFirst();
+                    List<String> activeStatuses = List.of("booked", "token_generated", "arrived", "weighing", "quality_check", "procurement", "payment_processing");
+                    Optional<Booking> activeBookingOpt = store.getAllBookings().stream().filter(b -> b.getFarmer().getId().equals(farmer.getId()) && activeStatuses.contains(b.getStatus())).findFirst();
 
                     if (activeBookingOpt.isPresent()) {
                         Booking b = activeBookingOpt.get();

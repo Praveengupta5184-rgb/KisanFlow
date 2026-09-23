@@ -1,0 +1,26 @@
+{
+  "centres": [
+    {
+      "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "name": "Kapurthala Main Mandi",
+      "district": "Kapurthala",
+      "state": "Punjab",
+      "capacity": 500,
+      "latitude": 31.380,
+      "longitude": 75.380,
+      "currentLoad": 40.5,
+      "processingSpeed": 1.2,
+      "staffCount": 10
+    }
+  ],
+  "farmers": [
+    {
+      "id": "d16c90c0-1234-4321-abcd-112233445566",
+      "name": "Demo Farmer",
+      "mobileNumber": "9876543210",
+      "village": "Phagwara",
+      "preferredLanguage": "pa",
+      "cropType": "Wheat"
+    }
+  ]
+}

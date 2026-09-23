@@ -1,0 +1,62 @@
+{
+  "centres": [
+    {
+      "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "name": "Kapurthala Main Mandi",
+      "district": "Kapurthala",
+      "state": "Punjab",
+      "capacity": 500,
+      "latitude": 31.380,
+      "longitude": 75.380,
+      "currentLoad": 40,
+      "processingSpeed": 1.2,
+      "staffCount": 10
+    },
+    {
+      "id": "a1b2c3d4-1111-2222-3333-444455556666",
+      "name": "Rajpura Smart Mandi",
+      "district": "Patiala",
+      "state": "Punjab",
+      "capacity": 400,
+      "latitude": 30.480,
+      "longitude": 76.590,
+      "currentLoad": 15,
+      "processingSpeed": 1.8,
+      "staffCount": 14
+    },
+    {
+      "id": "b2c3d4e5-2222-3333-4444-555566667777",
+      "name": "Patiala Agricultural Market",
+      "district": "Patiala",
+      "state": "Punjab",
+      "capacity": 350,
+      "latitude": 30.340,
+      "longitude": 76.400,
+      "currentLoad": 120,
+      "processingSpeed": 0.8,
+      "staffCount": 8
+    },
+    {
+      "id": "c3d4e5f6-3333-4444-5555-666677778888",
+      "name": "Ludhiana Grain Market",
+      "district": "Ludhiana",
+      "state": "Punjab",
+      "capacity": 600,
+      "latitude": 30.900,
+      "longitude": 75.857,
+      "currentLoad": 60,
+      "processingSpeed": 1.5,
+      "staffCount": 18
+    }
+  ],
+  "farmers": [
+    {
+      "id": "d16c90c0-1234-4321-abcd-112233445566",
+      "name": "Demo Farmer",
+      "mobileNumber": "9876543210",
+      "village": "Phagwara",
+      "preferredLanguage": "pa",
+      "cropType": "Wheat"
+    }
+  ]
+}
